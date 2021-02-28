@@ -63,7 +63,7 @@ class DailyGeneratedCost
 
     public function __toString(): string
     {
-        return 'Value: ' . strval($this->value);
+        return $this->value;
     }
 
     public function getBudgetDate(): ?BudgetAdjustmentDate
