@@ -2,22 +2,35 @@
 
 namespace App\Controller;
 
-use App\Services\BudgetDailyAdjustmentGeneratorService;
+use App\Services\CostGeneratorService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class BudgetDailyAdjustmentController extends AbstractController
+class DailyGeneratedCostController extends AbstractController
 {
     /**
-     * @Route("/generate-budget", name="generate_budget")
+     * @var EntityManagerInterface
      */
-    public function generate(BudgetDailyAdjustmentGeneratorService $budgetDailyAdjustmentGeneratorService): Response
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @Route("/generate-costs", name="generate_costs")
+     */
+    public function index(
+        CostGeneratorService $costGeneratorService
+    ): Response
     {
         try {
-            $budgetDailyAdjustmentGeneratorService->truncateTables();
-            $budgetDailyAdjustmentGeneratorService->generateBudget();
+            $costGeneratorService->truncateTables();
+            $costGeneratorService->generateCosts();
         } catch (\Exception $exception) {
             return new JsonResponse([
                 'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
@@ -29,5 +42,6 @@ class BudgetDailyAdjustmentController extends AbstractController
             'code' => Response::HTTP_CREATED,
             'message' => 'OK',
         ], Response::HTTP_CREATED);
+
     }
 }

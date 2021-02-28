@@ -18,12 +18,6 @@ class DailyGeneratedCost
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=CostDate::class, inversedBy="dailyGeneratedCosts", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $costDay;
-
-    /**
      * @ORM\Column(type="time")
      */
     private $time;
@@ -33,21 +27,14 @@ class DailyGeneratedCost
      */
     private $value;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=BudgetAdjustmentDate::class, inversedBy="dailyGeneratedCosts")
+     */
+    private $budgetDate;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCostDay(): ?CostDate
-    {
-        return $this->costDay;
-    }
-
-    public function setCostDay(?CostDate $costDay): self
-    {
-        $this->costDay = $costDay;
-
-        return $this;
     }
 
     public function getTime(): ?\DateTimeInterface
@@ -70,6 +57,23 @@ class DailyGeneratedCost
     public function setValue(float $value): self
     {
         $this->value = $value;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return 'Value: ' . strval($this->value);
+    }
+
+    public function getBudgetDate(): ?BudgetAdjustmentDate
+    {
+        return $this->budgetDate;
+    }
+
+    public function setBudgetDate(?BudgetAdjustmentDate $budgetDate): self
+    {
+        $this->budgetDate = $budgetDate;
 
         return $this;
     }

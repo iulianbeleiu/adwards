@@ -29,9 +29,15 @@ class BudgetAdjustmentDate
      */
     private $budgetDailyAdjustments;
 
+    /**
+     * @ORM\OneToMany(targetEntity=DailyGeneratedCost::class, mappedBy="budgetDate")
+     */
+    private $dailyGeneratedCosts;
+
     public function __construct()
     {
         $this->budgetDailyAdjustments = new ArrayCollection();
+        $this->dailyGeneratedCosts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -75,6 +81,40 @@ class BudgetAdjustmentDate
             // set the owning side to null (unless already changed)
             if ($budgetDailyAdjustment->getBudgetDate() === $this) {
                 $budgetDailyAdjustment->setBudgetDate(null);
+            }
+        }
+
+        return $this;
+    }
+    public function __toString(): string
+    {
+        return strval($this->id);
+    }
+
+    /**
+     * @return Collection|DailyGeneratedCost[]
+     */
+    public function getDailyGeneratedCosts(): Collection
+    {
+        return $this->dailyGeneratedCosts;
+    }
+
+    public function addDailyGeneratedCost(DailyGeneratedCost $dailyGeneratedCost): self
+    {
+        if (!$this->dailyGeneratedCosts->contains($dailyGeneratedCost)) {
+            $this->dailyGeneratedCosts[] = $dailyGeneratedCost;
+            $dailyGeneratedCost->setBudgetDate($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDailyGeneratedCost(DailyGeneratedCost $dailyGeneratedCost): self
+    {
+        if ($this->dailyGeneratedCosts->removeElement($dailyGeneratedCost)) {
+            // set the owning side to null (unless already changed)
+            if ($dailyGeneratedCost->getBudgetDate() === $this) {
+                $dailyGeneratedCost->setBudgetDate(null);
             }
         }
 
