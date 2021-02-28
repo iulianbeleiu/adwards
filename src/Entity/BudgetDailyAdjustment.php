@@ -18,7 +18,7 @@ class BudgetDailyAdjustment
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=BudgetAdjustmentDate::class, inversedBy="budgetDailyAdjustments")
+     * @ORM\ManyToOne(targetEntity=BudgetAdjustmentDate::class, inversedBy="budgetDailyAdjustments", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $budgetDate;
