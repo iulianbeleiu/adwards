@@ -4,16 +4,80 @@
 
 {% block body %}
     <div class="js-wrapper">
-        <button class="js-generate-random-stuff">Generate random stuff</button>
+        <button class="js-generate-budget">Generate budget</button>
+        <button class="js-generate-costs">Generate costs</button>
         <a href="{{ path('admin') }}" target="_blank">See report in detail</a>
         <canvas class="js-chart"></canvas>
     </div>
+
+    <script>
+
+        var $chartElement = $('.js-chart');
+        var $chart = new Chart($chartElement, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                datasets: [{
+                    label: 'Budget',
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: [10, 30, 39, 20, 25, 34, -10],
+                    fill: false,
+                }, {
+                    label: 'Cost',
+                    fill: false,
+                    backgroundColor: 'rgb(54, 162, 235)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    data: [18, 33, 22, 19, 11, 39, 30],
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Max Budget / Day  VS Total Cost Generated / Day'
+                },
+                scales: {
+                    y: {
+                        // the data minimum used for determining the ticks is Math.min(dataMin, suggestedMin)
+                        suggestedMin: 10,
+
+                        // the data maximum used for determining the ticks is Math.max(dataMax, suggestedMax)
+                        suggestedMax: 50
+                    }
+                }
+            }
+        });
+
+        // $(document).ready(function()
+        // {
+        //     setInterval(function() {
+        //         ajax_chart($chart, '/daily-report');
+        //     }, 1000);
+        // });
+
+        function ajax_chart(chart, url) {
+            var data = {};
+
+            $.getJSON(url, data).done(function(response) {
+                chart.data.datasets[0].data = response.budget;
+                chart.data.datasets[1].data = response.costs;
+                chart.data.labels = response.days;
+                chart.update();
+            });
+        }
+
+    </script>
 
     <script src="{{ asset('assets/js/app.js') }}"></script>
     <script>
         $(document).ready(function () {
             var $wrapper = $('.js-wrapper');
             var app = new App($wrapper);
+
+            setInterval(function() {
+                ajax_chart($chart, '/daily-report');
+            }, 1000);
         });
     </script>
 {% endblock %}

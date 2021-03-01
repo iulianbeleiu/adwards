@@ -12,7 +12,7 @@ use App\Repository\DailyGeneratedCostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
-class CostGeneratorService
+class CostGeneratorService2
 {
     /**
      * @var BudgetAdjustmentDateRepository
