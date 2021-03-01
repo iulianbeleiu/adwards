@@ -47,4 +47,25 @@ class DailyGeneratedCostRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findMonthlyGeneratedCost($month)
+    {
+        $connection = $this->getEntityManager()
+            ->getConnection();
+        $sql = '
+               SELECT Sum(daily_generated_cost.value) cost_generated 
+            FROM   daily_generated_cost 
+                   INNER JOIN budget_adjustment_date 
+                           ON budget_adjustment_date.id = 
+                              daily_generated_cost.budget_date_id 
+            WHERE  Month(budget_adjustment_date.day) = ?
+            GROUP  BY Month(budget_adjustment_date.day);
+        ';
+
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(1, $month);
+        $statement->execute();
+
+        return $statement->fetchOne();
+    }
 }
