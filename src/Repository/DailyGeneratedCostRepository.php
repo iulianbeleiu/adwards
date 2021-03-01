@@ -68,4 +68,33 @@ class DailyGeneratedCostRepository extends ServiceEntityRepository
 
         return $statement->fetchOne();
     }
+
+    public function findMaxBudgetAndGeneratedCostsPerDay()
+    {
+        $connection = $this->getEntityManager()
+            ->getConnection();
+        $sql = '
+               SELECT daily_budget.day, 
+               daily_budget.max_per_day, 
+               Sum(daily_generated_cost.value) generated_cost 
+        FROM   (SELECT budget_adjustment_date.id, 
+                       budget_adjustment_date.day, 
+                       Max(budget_daily_adjustment.value) max_per_day 
+                FROM   budget_daily_adjustment 
+                       INNER JOIN budget_adjustment_date 
+                               ON budget_adjustment_date.id = 
+                                  budget_daily_adjustment.budget_date_id 
+                GROUP  BY budget_adjustment_date.day 
+                ORDER  BY budget_adjustment_date.id ASC) daily_budget 
+               INNER JOIN daily_generated_cost 
+                       ON daily_generated_cost.budget_date_id = daily_budget.id 
+        GROUP  BY daily_budget.day 
+        ORDER  BY daily_budget.day ASC;  
+        ';
+
+        $statement = $connection->prepare($sql);
+        $statement->execute();
+
+        return $statement->fetchAllAssociative();
+    }
 }
